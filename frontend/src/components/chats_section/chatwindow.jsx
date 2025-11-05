@@ -5,7 +5,7 @@ import io from "socket.io-client";
 import MessageInput from "../chats_section/messageinput";
 import SidebarDrawer from "../chats_section/sidedrawer";
 
-const SOCKET_URL = "http://localhost:3000";
+const SOCKET_URL = "https://volt-messaging-webapp-backend.onrender.com/";
 let socket;
 
 export default function ChatWindow({ chat, onBack, onChatSelect, onProfileClick }) {

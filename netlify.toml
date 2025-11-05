@@ -1,0 +1,5 @@
+# Redirect all routes to index.html (for React Router or any SPA)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
