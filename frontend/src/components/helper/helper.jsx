@@ -2,7 +2,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 // ✅ Base URL for your backend
-export const BASE_URL = "https://volt-messaging-webapp-backend.onrender.com/";
+export const BASE_URL = "http://localhost:3000";
 
 // ✅ Preconfigured Axios instance
 export const api = axios.create({
@@ -12,6 +12,7 @@ export const api = axios.create({
     "Content-Type": "application/json",
   },
 });
+
 
 // ✅ Auto-add token to headers
 api.interceptors.request.use((req) => {

@@ -78,16 +78,27 @@ const signup = async (req, res) => {
 };
 
 
+
 // 🔹 Get All Users (Protected route)
 const getAllUsers = async (req, res) => {
   try {
-    const users = await Signup.find({}, "name email _id token");
-    return res.status(200).json(users);
+    // fetch all users except password and __v fields
+    const users = await Signup.find().select("name email _id image verified");
+
+    // construct full image URLs
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const updatedUsers = users.map((user) => ({
+      ...user.toObject(),
+      image: user.image ? `${baseUrl}${user.image}` : "",
+    }));
+
+    return res.status(200).json(updatedUsers);
   } catch (err) {
     console.error("❌ Error fetching users:", err);
     return res.status(500).json({ message: "Failed to fetch users" });
   }
 };
+
 
 // ✅ Export both functions properly
 module.exports = { signup, getAllUsers };

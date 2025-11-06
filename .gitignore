@@ -14,6 +14,7 @@ lerna-debug.log*
 dist
 dist-ssr
 *.local
+frontend/public/urlchanges.txt
 
 # Editor directories and files
 .vscode/*

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { X } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 import { api } from "../helper/helper";
 
@@ -9,7 +9,7 @@ export default function Profile({ onBack }) {
   const [newImage, setNewImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Load user from backend or fallback to localStorage/JWT
+  // ✅ Load user data
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -19,6 +19,7 @@ export default function Profile({ onBack }) {
         const res = await api.get("/get/user", {
           headers: { Authorization: `Bearer ${token}` },
         });
+
         setUser(res.data);
         localStorage.setItem("userData", JSON.stringify(res.data));
       } catch (err) {
@@ -45,22 +46,20 @@ export default function Profile({ onBack }) {
     fetchUser();
   }, []);
 
-  // ✅ Handle name input change
-  const handleChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
-  };
+  // ✅ Handle name change
+  const handleChange = (e) => setUser({ ...user, [e.target.name]: e.target.value });
 
-  // ✅ Handle image preview
+  // ✅ Show preview before saving
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setNewImage(file);
-      const imageURL = URL.createObjectURL(file);
-      setUser({ ...user, image: imageURL });
+      const previewURL = URL.createObjectURL(file);
+      setUser({ ...user, image: previewURL });
     }
   };
 
-  // ✅ Save changes (name + image upload)
+  // ✅ Save profile & instantly refresh
   const handleSave = async () => {
     try {
       setLoading(true);
@@ -76,9 +75,18 @@ export default function Profile({ onBack }) {
         },
       });
 
-      setUser(res.data);
+      const updatedUser = res.data.user;
+
+      // ✅ Immediately refresh profile data
+      setUser(updatedUser);
       setIsEditing(false);
-      localStorage.setItem("userData", JSON.stringify(res.data));
+      localStorage.setItem("userData", JSON.stringify(updatedUser));
+
+      // ✅ Force reload of new image to bypass cache
+      if (updatedUser.image) {
+        const uniqueUrl = `${updatedUser.image}?t=${Date.now()}`;
+        setUser((prev) => ({ ...prev, image: uniqueUrl }));
+      }
     } catch (err) {
       console.error("Error updating profile:", err);
       alert("Failed to update profile. Please try again.");
@@ -87,7 +95,6 @@ export default function Profile({ onBack }) {
     }
   };
 
-  // ✅ Logout
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userData");
@@ -97,29 +104,29 @@ export default function Profile({ onBack }) {
   return (
     <div className="flex flex-col items-center justify-center h-full px-6 py-6 overflow-y-auto bg-[#0b1126] text-white transition-all duration-500">
       {/* Header */}
-      <div className="flex items-center w-full max-w-md mb-4">
+      <div className="flex items-center justify-between w-full max-w-md mb-4">
         <button
           onClick={onBack}
           className="text-gray-400 hover:text-yellow-400 md:hidden"
+          aria-label="Back"
         >
-          <ArrowLeft size={20} />
+          <X size={22} />
         </button>
         <h2 className="text-xl font-semibold text-center flex-1">Profile</h2>
       </div>
 
-      {/* Card */}
+      {/* Profile Card */}
       <div className="bg-[#101942] p-8 rounded-xl shadow-lg text-center w-full max-w-md border border-gray-700">
-        {/* Profile Image */}
         <div className="relative">
           <img
-            src={user.image || "/src/asset/user.png"}
+            src={user.image || "./src/assets/user.png"}
             alt="profile"
             className="w-24 h-24 rounded-full mx-auto mb-3 border-2 border-yellow-400 object-cover"
           />
           {isEditing && (
             <label
               htmlFor="imageUpload"
-              className="absolute bottom-2 right-[43%] bg-yellow-400 text-black text-xs px-2 py-1 rounded-full cursor-pointer hover:bg-yellow-300"
+              className="absolute bottom-2 right-[37%] bg-yellow-400 text-black text-xs px-2 py-1 rounded-full cursor-pointer hover:bg-yellow-300"
             >
               Change
             </label>
@@ -133,7 +140,6 @@ export default function Profile({ onBack }) {
           />
         </div>
 
-        {/* Name & Email */}
         {isEditing ? (
           <div className="space-y-3 mt-3">
             <input
@@ -167,7 +173,6 @@ export default function Profile({ onBack }) {
           </>
         )}
 
-        {/* Logout */}
         <button
           onClick={handleLogout}
           className="mt-6 w-full bg-red-500 text-white py-2 rounded-md font-semibold hover:bg-red-600"

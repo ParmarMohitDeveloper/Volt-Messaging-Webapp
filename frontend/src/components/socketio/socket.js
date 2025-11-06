@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
 import { getAuthToken } from "../helper/helper";
 
-export const SOCKET_URL = "https://volt-messaging-webapp-backend.onrender.com/"; // same as your backend
+export const SOCKET_URL = "http://localhost:3000"; // same as your backend
 
 export const socket = io(SOCKET_URL, {
   autoConnect: false,

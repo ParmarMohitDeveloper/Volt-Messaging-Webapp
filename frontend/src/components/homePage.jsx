@@ -6,7 +6,7 @@ export default function Homepage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="text-center py-24 px-4 bg-[#0d1333]">
+      <section className="text-center py-3 px-4 bg-[#0d1333]">
         <div className="inline-block bg-[#121b45] px-4 py-1 rounded-full text-sm mb-4">
           🟡 Now available on all platforms
         </div>
@@ -24,20 +24,18 @@ export default function Homepage() {
           >
             Start Messaging →
           </a>
-          <button className="border border-gray-500 text-white px-6 py-3 rounded-lg hover:bg-white/10 transition">
-            Watch Demo
-          </button>
+          
         </div>
       </section>
 
       {/* Features */}
-      <section className="py-20 bg-[#101942] text-center">
+      <section className="py-9 bg-[#101942] text-center">
         <h2 className="text-3xl font-bold mb-2">Why choose Volt?</h2>
         <p className="text-gray-400 mb-10">
           Built for the modern world with features that matter to you
         </p>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto px-8">
+        <div className="grid md:grid-cols-3 gap-5 max-w-6xl mx-auto px-7">
           {[
             {
               icon: "⚡",
@@ -68,7 +66,7 @@ export default function Homepage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-[#121b45] py-20 text-center">
+      <section className="bg-[#121b45] py-2 text-center">
         <h2 className="text-3xl font-bold mb-4">
           Ready to experience the future of messaging?
         </h2>
@@ -81,43 +79,17 @@ export default function Homepage() {
         >
           Create Your Account →
         </a>
+        <br />
+        <br />
       </section>
 
-      {/* Footer */}
-      <footer className="bg-[#0a0f29] py-10 text-gray-400 text-sm">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-8 px-8">
-          <div>
-            <h3 className="flex items-center space-x-2 text-white font-semibold mb-2">
-              ⚡ <span>Volt</span>
-            </h3>
-            <p>Lightning-fast messaging for everyone.</p>
-          </div>
-          <div>
-            <h4 className="text-white font-semibold mb-2">Product</h4>
-            <ul className="space-y-1">
-              <li>Features</li>
-              <li>Pricing</li>
-              <li>Security</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-white font-semibold mb-2">Company</h4>
-            <ul className="space-y-1">
-              <li>About</li>
-              <li>Blog</li>
-              <li>Careers</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-white font-semibold mb-2">Legal</h4>
-            <ul className="space-y-1">
-              <li>Privacy</li>
-              <li>Terms</li>
-              <li>Contact</li>
-            </ul>
-          </div>
-        </div>
-      </footer>
+     {/* Footer */}
+<footer className="bg-[#0a0f29] py-10 text-gray-400 text-sm">
+   {/* Credit Line */}
+    <div className="mt-10 pt-6 border-t border-gray-700 text-center text-xs text-gray-500">
+      Professionally created by <span className="text-white font-medium">Parmar Mohit</span>
+    </div>
+</footer>
     </div>
   );
 }

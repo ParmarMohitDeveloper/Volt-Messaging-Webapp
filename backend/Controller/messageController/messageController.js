@@ -19,7 +19,6 @@ const getMessages = async (req, res) => {
 
 // POST /api/messages
 // body: { chatId, content }
-// Also used by socket to persist incoming messages
 const postMessage = async (req, res) => {
   try {
     const senderId = req.user?.userId || req.user?.id || req.user?._id;
@@ -31,7 +30,8 @@ const postMessage = async (req, res) => {
     // Update latestMessage in Chat
     await Chat.findByIdAndUpdate(chatId, { latestMessage: msg._id }, { new: true });
 
-    const fullMessage = await Message.findById(msg._id).populate('sender', '-password -__v');
+    const fullMessage = await Message.findById(msg._id)
+      .populate('sender', '-password -__v');
 
     res.status(201).json(fullMessage);
   } catch (err) {
@@ -40,4 +40,70 @@ const postMessage = async (req, res) => {
   }
 };
 
-module.exports = { getMessages, postMessage };
+// PATCH /api/messages/:messageId  (edit within 2 minutes)
+const editMessage = async (req, res) => {
+  try {
+    const senderId = req.user?.userId || req.user?.id || req.user?._id;
+    const { messageId } = req.params;
+    const { content } = req.body;
+
+    if (!content || !content.trim()) {
+      return res.status(400).json({ message: 'content required' });
+    }
+
+    const msg = await Message.findById(messageId);
+    if (!msg) return res.status(404).json({ message: 'Message not found' });
+    if (String(msg.sender) !== String(senderId)) {
+      return res.status(403).json({ message: 'Not allowed' });
+    }
+    if (msg.isDeleted) {
+      return res.status(400).json({ message: 'Cannot edit a deleted message' });
+    }
+
+    // 2-minute edit window
+    const twoMinutes = 2 * 60 * 1000;
+    if (Date.now() - msg.createdAt.getTime() > twoMinutes) {
+      return res.status(400).json({ message: 'Edit window closed (2 minutes)' });
+    }
+
+    msg.content = content.trim();
+    msg.editedAt = new Date();
+    await msg.save();
+
+    const populated = await Message.findById(messageId).populate('sender', '-password -__v');
+    res.json(populated);
+  } catch (err) {
+    console.error('editMessage error', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// DELETE /api/messages/:messageId (unsend for everyone - soft delete)
+const deleteMessage = async (req, res) => {
+  try {
+    const senderId = req.user?.userId || req.user?.id || req.user?._id;
+    const { messageId } = req.params;
+
+    const msg = await Message.findById(messageId);
+    if (!msg) return res.status(404).json({ message: 'Message not found' });
+    if (String(msg.sender) !== String(senderId)) {
+      return res.status(403).json({ message: 'Not allowed' });
+    }
+    if (msg.isDeleted) {
+      return res.status(200).json({ ok: true }); // already deleted
+    }
+
+    msg.isDeleted = true;
+    msg.content = '';     // scrub content
+    msg.editedAt = null;  // clear edit flag
+    await msg.save();
+
+    const populated = await Message.findById(messageId).populate('sender', '-password -__v');
+    res.json(populated);
+  } catch (err) {
+    console.error('deleteMessage error', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = { getMessages, postMessage, editMessage, deleteMessage };

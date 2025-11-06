@@ -13,7 +13,7 @@ const app = express();
 // ✅ Middleware setup
 app.use(
   cors({
-    origin: "http://localhost:5173", // your React frontend
+    origin: "https://voltmessage.netlify.app", // your React frontend
     credentials: true,
   })
 );
