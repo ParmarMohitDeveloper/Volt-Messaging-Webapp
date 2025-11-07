@@ -2,7 +2,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 // ✅ Base URL for your backend
-export const BASE_URL = "http://localhost:3000";
+export const BASE_URL = "https://voltbackend.vercel.app";
 
 // ✅ Preconfigured Axios instance
 export const api = axios.create({
